@@ -1,5 +1,6 @@
 include "root" {
-  path = find_in_parent_folders()
+  path   = find_in_parent_folders()
+  expose = true
 }
 
 dependency "kms" {
@@ -11,7 +12,7 @@ dependency "kms" {
 }
 
 inputs = {
-  kms_key_arn = dependency.kms.outputs.kms_key_arn
+  kms_key_arn = include.root.inputs.create_kms_key ? dependency.kms.outputs.kms_key_arn : null
 }
 
 terraform {

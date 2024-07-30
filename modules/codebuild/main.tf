@@ -11,7 +11,7 @@ resource "aws_codebuild_project" "runner" {
     ---
     version: 0.2
     phases:
-      dummy:
+      build:
         commands:
           - echo 'This buildspec will be overridden.'
     EOT
@@ -28,10 +28,11 @@ resource "aws_codebuild_project" "runner" {
       status = "DISABLED"
     }
     dynamic "s3_logs" {
-      for_each = var.codebuild_logs_config_s3_bucket_id != null ? [true] : []
+      for_each = var.codebuild_logs_config_s3_logs_bucket_id != null ? [true] : []
       content {
-        location = "${var.codebuild_logs_config_s3_logs_bucket_id}/${var.system_name}/${var.env_type}/codebuild/${local.codebuild_project_name}"
-        status   = "ENABLED"
+        location            = "${var.codebuild_logs_config_s3_logs_bucket_id}/${var.system_name}/${var.env_type}/codebuild/${local.codebuild_project_name}"
+        encryption_disabled = false
+        status              = "ENABLED"
       }
     }
   }

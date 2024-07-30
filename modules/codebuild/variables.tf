@@ -31,7 +31,7 @@ variable "codebuild_environment_compute_type" {
 variable "codebuild_environment_image" {
   description = "Image for CodeBuild environment"
   type        = string
-  default     = "aws/codebuild/standard:7.0"
+  default     = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
 }
 
 variable "codebuild_environment_image_pull_credentials_type" {

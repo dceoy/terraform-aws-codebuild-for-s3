@@ -50,7 +50,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "base" {
     bucket_key_enabled = true
     apply_server_side_encryption_by_default {
       kms_master_key_id = var.kms_key_arn
-      sse_algorithm     = "aws:kms"
+      sse_algorithm     = var.kms_key_arn != null ? "aws:kms" : "AES256"
     }
   }
 }
@@ -62,7 +62,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "log" {
     bucket_key_enabled = true
     apply_server_side_encryption_by_default {
       kms_master_key_id = var.kms_key_arn
-      sse_algorithm     = "aws:kms"
+      sse_algorithm     = var.kms_key_arn != null ? "aws:kms" : "AES256"
     }
   }
 }
@@ -181,9 +181,12 @@ resource "aws_iam_policy" "s3" {
       (
         var.kms_key_arn != null ? [
           {
-            Sid      = "AllowKMSDecrypt"
-            Effect   = "Allow"
-            Action   = ["kms:Decrypt"]
+            Sid    = "AllowKMSAccess"
+            Effect = "Allow"
+            Action = [
+              "kms:Decrypt",
+              "kms:GenerateDataKey"
+            ]
             Resource = [var.kms_key_arn]
           }
         ] : []

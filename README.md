@@ -43,3 +43,10 @@ Cleanup
 ```sh
 $ terragrunt run-all destroy --terragrunt-working-dir='envs/dev/' --terragrunt-non-interactive
 ```
+
+Usage
+-----
+
+```sh
+$ aws codebuild start-build --project-name <system_name>-<env_type>-s3-codebuild-project
+```
