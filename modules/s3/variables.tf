@@ -17,7 +17,7 @@ variable "kms_key_arn" {
 }
 
 variable "s3_expiration_days" {
-  description = "S3 expiration days"
+  description = "Days to retain S3 objects"
   type        = number
   default     = null
 }
@@ -29,15 +29,29 @@ variable "s3_force_destroy" {
 }
 
 variable "s3_noncurrent_version_expiration_days" {
-  description = "S3 noncurrent version expiration days"
+  description = "Days to retain the noncurrent versions of S3 objects"
   type        = number
   default     = 7
+  validation {
+    condition     = var.s3_noncurrent_version_expiration_days >= 1
+    error_message = "s3_noncurrent_version_expiration_days must be greater than or equal to 1"
+  }
 }
 
 variable "s3_abort_incomplete_multipart_upload_days" {
-  description = "S3 abort incomplete multipart upload days"
+  description = "Days to retain incomplete multipart uploads in S3"
   type        = number
   default     = 7
+  validation {
+    condition     = var.s3_abort_incomplete_multipart_upload_days >= 1
+    error_message = "s3_abort_incomplete_multipart_upload_days must be greater than or equal to 1"
+  }
+}
+
+variable "s3_expired_object_delete_marker" {
+  description = "Whether to delete expired S3 object delete markers"
+  type        = bool
+  default     = true
 }
 
 variable "enable_s3_server_access_logging" {
