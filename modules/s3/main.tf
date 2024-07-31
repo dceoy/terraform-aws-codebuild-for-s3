@@ -1,8 +1,8 @@
-resource "aws_s3_bucket" "base" {
-  bucket        = local.base_s3_bucket_name
+resource "aws_s3_bucket" "io" {
+  bucket        = local.io_s3_bucket_name
   force_destroy = var.s3_force_destroy
   tags = {
-    Name       = local.base_s3_bucket_name
+    Name       = local.io_s3_bucket_name
     SystemName = var.system_name
     EnvType    = var.env_type
   }
@@ -20,15 +20,15 @@ resource "aws_s3_bucket" "log" {
   }
 }
 
-resource "aws_s3_bucket_logging" "base" {
+resource "aws_s3_bucket_logging" "io" {
   count         = length(aws_s3_bucket.log) > 0 ? 1 : 0
-  bucket        = aws_s3_bucket.base.id
+  bucket        = aws_s3_bucket.io.id
   target_bucket = aws_s3_bucket.log[count.index].id
-  target_prefix = "${aws_s3_bucket.base.id}/"
+  target_prefix = "${aws_s3_bucket.io.id}/"
 }
 
-resource "aws_s3_bucket_public_access_block" "base" {
-  bucket                  = aws_s3_bucket.base.id
+resource "aws_s3_bucket_public_access_block" "io" {
+  bucket                  = aws_s3_bucket.io.id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -44,8 +44,8 @@ resource "aws_s3_bucket_public_access_block" "log" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "base" {
-  bucket = aws_s3_bucket.base.id
+resource "aws_s3_bucket_server_side_encryption_configuration" "io" {
+  bucket = aws_s3_bucket.io.id
   rule {
     bucket_key_enabled = true
     apply_server_side_encryption_by_default {
@@ -67,8 +67,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "log" {
   }
 }
 
-resource "aws_s3_bucket_versioning" "base" {
-  bucket = aws_s3_bucket.base.id
+resource "aws_s3_bucket_versioning" "io" {
+  bucket = aws_s3_bucket.io.id
   versioning_configuration {
     status = "Enabled"
   }
@@ -82,8 +82,8 @@ resource "aws_s3_bucket_versioning" "log" {
   }
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "base" {
-  bucket = aws_s3_bucket.base.id
+resource "aws_s3_bucket_lifecycle_configuration" "io" {
+  bucket = aws_s3_bucket.io.id
   rule {
     status = "Enabled"
     id     = "Move-to-Intelligent-Tiering-after-0day"
@@ -165,7 +165,7 @@ resource "aws_iam_policy" "s3" {
     Statement = concat(
       [
         {
-          Sid    = "AllowS3BucketAccess"
+          Sid    = "AllowS3GetAndListActions"
           Effect = "Allow"
           Action = [
             "s3:Describe*",
@@ -175,9 +175,15 @@ resource "aws_iam_policy" "s3" {
             "s3-object-lambda:List*"
           ]
           Resource = [
-            aws_s3_bucket.base.arn,
-            "${aws_s3_bucket.base.arn}/*"
+            aws_s3_bucket.io.arn,
+            "${aws_s3_bucket.io.arn}/*"
           ]
+        },
+        {
+          Sid      = "AllowS3PutObjectActions"
+          Effect   = "Allow"
+          Action   = ["s3:PutObject*"]
+          Resource = ["${aws_s3_bucket.io.arn}/*"]
         }
       ],
       (

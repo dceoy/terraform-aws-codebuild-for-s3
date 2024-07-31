@@ -10,6 +10,22 @@ variable "env_type" {
   default     = "dev"
 }
 
+variable "kms_key_arn" {
+  description = "KMS key ARN"
+  type        = string
+  default     = null
+}
+
+variable "cloudwatch_logs_retention_in_days" {
+  description = "CloudWatch Logs retention in days"
+  type        = number
+  default     = 30
+  validation {
+    condition     = contains([0, 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653], var.cloudwatch_logs_retention_in_days)
+    error_message = "CloudWatch Logs retention in days must be 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653 or 0 (zero indicates never expire logs)"
+  }
+}
+
 variable "iam_role_force_detach_policies" {
   description = "Whether to force detaching any IAM policies the IAM role has before destroying it"
   type        = bool
@@ -76,4 +92,10 @@ variable "codebuild_iam_policy_arns" {
   description = "IAM policy ARNs to attach to CodeBuild IAM role"
   type        = list(string)
   default     = []
+}
+
+variable "enable_cloudwatch_logs" {
+  description = "Whether to enable CloudWatch logs for CodeBuild project"
+  type        = bool
+  default     = false
 }

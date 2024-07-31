@@ -56,6 +56,7 @@ inputs = {
   env_type                                          = local.env_vars.locals.env_type
   create_kms_key                                    = false
   kms_key_deletion_window_in_days                   = 30
+  kms_key_rotation_period_in_days                   = 365
   s3_force_destroy                                  = true
   s3_noncurrent_version_expiration_days             = 7
   s3_abort_incomplete_multipart_upload_days         = 7
@@ -69,4 +70,6 @@ inputs = {
   codebuild_environment_privileged_mode             = false
   codebuild_build_timeout                           = 5
   codebuild_queue_timeout                           = 5
+  enable_cloudwatch_logs                            = false
+  cloudwatch_logs_retention_in_days                 = 30
 }

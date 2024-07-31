@@ -11,9 +11,15 @@ resource "aws_codebuild_project" "runner" {
     ---
     version: 0.2
     phases:
+      pre_build:
+        commands:
+          - echo 'This is pre_build phase.'
       build:
         commands:
-          - echo 'This buildspec will be overridden.'
+          - echo 'This is build phase.'
+      post_build:
+        commands:
+          - echo 'This is post_build phase.'
     EOT
   }
   environment {
@@ -25,14 +31,16 @@ resource "aws_codebuild_project" "runner" {
   }
   logs_config {
     cloudwatch_logs {
-      status = "DISABLED"
+      status     = length(aws_cloudwatch_log_group.runner) > 0 ? "ENABLED" : "DISABLED"
+      group_name = length(aws_cloudwatch_log_group.runner) > 0 ? aws_cloudwatch_log_group.runner[0].name : null
+      # stream_name = null
     }
     dynamic "s3_logs" {
       for_each = var.codebuild_logs_config_s3_logs_bucket_id != null ? [true] : []
       content {
+        status              = "ENABLED"
         location            = "${var.codebuild_logs_config_s3_logs_bucket_id}/${var.system_name}/${var.env_type}/codebuild/${local.codebuild_project_name}"
         encryption_disabled = false
-        status              = "ENABLED"
       }
     }
   }
@@ -69,4 +77,55 @@ resource "aws_iam_role" "runner" {
     SystemName = var.system_name
     EnvType    = var.env_type
   }
+}
+
+resource "aws_cloudwatch_log_group" "runner" {
+  count             = var.enable_cloudwatch_logs ? 1 : 0
+  name              = "/${var.system_name}/${var.env_type}/codebuild/${local.codebuild_project_name}"
+  retention_in_days = var.cloudwatch_logs_retention_in_days
+  kms_key_id        = var.kms_key_arn
+  tags = {
+    Name       = "/${var.system_name}/${var.env_type}/codebuild/${local.codebuild_project_name}"
+    SystemName = var.system_name
+    EnvType    = var.env_type
+  }
+}
+
+resource "aws_iam_role_policy" "logs" {
+  count = length(aws_cloudwatch_log_group.runner) > 0 ? 1 : 0
+  name  = "${var.system_name}-${var.env_type}-cloudwatch-logs-policy"
+  role  = aws_iam_role.runner.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = concat(
+      [
+        {
+          Sid      = "AllowDescribeLogGroups"
+          Effect   = "Allow"
+          Action   = ["logs:DescribeLogGroups"]
+          Resource = ["arn:aws:logs:${local.region}:${local.account_id}:log-group:*"]
+        },
+        {
+          Sid    = "AllowLogStreamAccess"
+          Effect = "Allow"
+          Action = [
+            "logs:CreateLogStream",
+            "logs:PutLogEvents",
+            "logs:DescribeLogStreams"
+          ]
+          Resource = ["${aws_cloudwatch_log_group.runner[count.index].arn}:*"]
+        }
+      ],
+      (
+        var.kms_key_arn != null ? [
+          {
+            Sid      = "AllowKMSAccess"
+            Effect   = "Allow"
+            Action   = ["kms:GenerateDataKey"]
+            Resource = [var.kms_key_arn]
+          }
+        ] : []
+      )
+    )
+  })
 }
