@@ -63,6 +63,7 @@ inputs = {
   s3_expired_object_delete_marker                   = true
   enable_s3_server_access_logging                   = true
   iam_role_force_detach_policies                    = true
+  codebuild_buildspec_yml_path                      = find_in_parent_folders("buildspec.yml")
   codebuild_environment_type                        = "ARM_CONTAINER"
   codebuild_environment_compute_type                = "BUILD_GENERAL1_SMALL"
   codebuild_environment_image                       = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
@@ -70,6 +71,6 @@ inputs = {
   codebuild_environment_privileged_mode             = false
   codebuild_build_timeout                           = 5
   codebuild_queue_timeout                           = 5
-  enable_cloudwatch_logs                            = false
+  enable_cloudwatch_logs                            = true
   cloudwatch_logs_retention_in_days                 = 30
 }

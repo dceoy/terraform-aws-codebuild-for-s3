@@ -7,7 +7,7 @@ resource "aws_codebuild_project" "runner" {
   }
   source {
     type      = "NO_SOURCE"
-    buildspec = file("${path.module}/buildspec.yml")
+    buildspec = file(var.codebuild_buildspec_yml_path)
   }
   environment {
     type                        = var.codebuild_environment_type
@@ -15,6 +15,14 @@ resource "aws_codebuild_project" "runner" {
     image                       = var.codebuild_environment_image
     image_pull_credentials_type = var.codebuild_environment_image_pull_credentials_type
     privileged_mode             = var.codebuild_environment_privileged_mode
+    environment_variable {
+      name  = "AWS_DEFAULT_REGION"
+      value = local.region
+    }
+    environment_variable {
+      name  = "AWS_ACCOUNT_ID"
+      value = local.account_id
+    }
   }
   logs_config {
     cloudwatch_logs {
@@ -23,7 +31,7 @@ resource "aws_codebuild_project" "runner" {
       # stream_name = null
     }
     dynamic "s3_logs" {
-      for_each = var.codebuild_logs_config_s3_logs_bucket_id != null ? [true] : []
+      for_each = length(aws_cloudwatch_log_group.runner) == 0 && var.codebuild_logs_config_s3_logs_bucket_id != null ? [true] : []
       content {
         status              = "ENABLED"
         location            = "${var.codebuild_logs_config_s3_logs_bucket_id}/${var.system_name}/${var.env_type}/codebuild/${local.codebuild_project_name}"

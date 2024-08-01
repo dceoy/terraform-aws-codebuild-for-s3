@@ -23,7 +23,10 @@ dependency "s3" {
 inputs = {
   kms_key_arn                             = include.root.inputs.create_kms_key ? dependency.kms.outputs.kms_key_arn : null
   codebuild_logs_config_s3_logs_bucket_id = dependency.s3.outputs.io_s3_bucket_id
-  codebuild_iam_policy_arns               = [dependency.s3.outputs.s3_iam_policy_arn]
+  codebuild_iam_policy_arns = [
+    dependency.s3.outputs.s3_iam_policy_arn,
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
+  ]
 }
 
 terraform {

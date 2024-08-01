@@ -38,6 +38,12 @@ variable "codebuild_environment_type" {
   default     = "ARM_CONTAINER"
 }
 
+variable "codebuild_buildspec_yml_path" {
+  description = "Path to CodeBuild buildspec.yml file"
+  type        = string
+  default     = "buildspec.yml"
+}
+
 variable "codebuild_environment_compute_type" {
   description = "Compute type for CodeBuild environment"
   type        = string
