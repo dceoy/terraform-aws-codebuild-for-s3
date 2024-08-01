@@ -1,0 +1,31 @@
+---
+version: 0.2
+env:
+  shell: bash
+  variables:
+    AWS_REGION: us-east-1
+phases:
+  install:
+    on-failure: ABORT
+    commands:
+      - echo 'This is install phase.'
+    finally:
+      - echo 'This is install phase finally.'
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - echo 'This is pre_build phase.'
+    finally:
+      - echo 'This is pre_build phase finally.'
+  build:
+    on-failure: ABORT
+    commands:
+      - echo 'This is build phase.'
+    finally:
+      - echo 'This is build phase finally.'
+  post_build:
+    on-failure: ABORT
+    commands:
+      - echo 'This is post_build phase.'
+    finally:
+      - echo 'This is post_build phase finally.'

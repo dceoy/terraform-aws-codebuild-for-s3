@@ -7,20 +7,7 @@ resource "aws_codebuild_project" "runner" {
   }
   source {
     type      = "NO_SOURCE"
-    buildspec = <<-EOT
-    ---
-    version: 0.2
-    phases:
-      pre_build:
-        commands:
-          - echo 'This is pre_build phase.'
-      build:
-        commands:
-          - echo 'This is build phase.'
-      post_build:
-        commands:
-          - echo 'This is post_build phase.'
-    EOT
+    buildspec = file("${path.module}/buildspec.yml")
   }
   environment {
     type                        = var.codebuild_environment_type
