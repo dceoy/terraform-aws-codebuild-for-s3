@@ -15,13 +15,13 @@ resource "aws_codebuild_project" "runner" {
     image                       = var.codebuild_environment_image
     image_pull_credentials_type = var.codebuild_environment_image_pull_credentials_type
     privileged_mode             = var.codebuild_environment_privileged_mode
-    environment_variable {
-      name  = "AWS_DEFAULT_REGION"
-      value = local.region
-    }
-    environment_variable {
-      name  = "AWS_ACCOUNT_ID"
-      value = local.account_id
+    dynamic "environment_variable" {
+      for_each = var.codebuild_environment_environment_variables
+      content {
+        name  = environment_variable.key
+        value = environment_variable.value
+        type  = "PLAINTEXT"
+      }
     }
   }
   logs_config {

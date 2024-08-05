@@ -69,8 +69,14 @@ inputs = {
   codebuild_environment_image                       = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
   codebuild_environment_image_pull_credentials_type = "CODEBUILD"
   codebuild_environment_privileged_mode             = false
-  codebuild_build_timeout                           = 5
-  codebuild_queue_timeout                           = 5
-  enable_cloudwatch_logs                            = true
-  cloudwatch_logs_retention_in_days                 = 30
+  codebuild_environment_environment_variables = {
+    "SYSTEM_NAME"        = local.env_vars.locals.system_name
+    "ENV_TYPE"           = local.env_vars.locals.env_type
+    "AWS_ACCOUNT_ID"     = local.env_vars.locals.account_id
+    "AWS_DEFAULT_REGION" = local.env_vars.locals.region
+  }
+  codebuild_build_timeout           = 5
+  codebuild_queue_timeout           = 5
+  enable_cloudwatch_logs            = true
+  cloudwatch_logs_retention_in_days = 30
 }

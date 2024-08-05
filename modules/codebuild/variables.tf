@@ -68,6 +68,12 @@ variable "codebuild_environment_privileged_mode" {
   default     = false
 }
 
+variable "codebuild_environment_environment_variables" {
+  description = "Environment variables for CodeBuild environment"
+  type        = map(string)
+  default     = {}
+}
+
 variable "codebuild_build_timeout" {
   description = "Build timeout for CodeBuild project"
   type        = number
