@@ -53,3 +53,5 @@ jobs:
     needs:
       - terraform-lint-and-scan
     uses: dceoy/gh-actions-for-devops/.github/workflows/dependabot-auto-merge.yml@main
+    with:
+      unconditional: true
