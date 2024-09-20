@@ -34,7 +34,7 @@ jobs:
       search-path: .
       terraform-version: latest
       terragrunt-version: latest
-  terraform-lock-files-upgrade:
+  terraform-lock-files-upgrade-and-pr-merge:
     if: >
       (
         github.event_name == 'pull_request'
@@ -44,12 +44,16 @@ jobs:
     with:
       terragrunt-working-directories: envs/dev
       terraform-version: latest
+      merged-pr-branch-prefix: ${{ startswith(github.head_ref, 'dependabot/terraform/') && 'dependabot/terraform/' || null }}
+      delete-merged-branch: true
       search-path-for-lint-and-scan: .
       terragrunt-version: latest
-      merge-pr: true
+      merge-pr: ${{ github.event_name == 'pull_request' }}
   dependabot-auto-merge:
     if: >
-      github.event_name == 'pull_request' && github.actor == 'dependabot[bot]'
+      github.event_name == 'pull_request'
+      && github.actor == 'dependabot[bot]'
+      && (! startswith(github.head_ref, 'dependabot/terraform/'))
     needs:
       - terraform-lint-and-scan
     uses: dceoy/gh-actions-for-devops/.github/workflows/dependabot-auto-merge.yml@main
