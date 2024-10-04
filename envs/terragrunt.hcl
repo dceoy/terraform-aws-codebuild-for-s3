@@ -45,8 +45,8 @@ EOF
 
 catalog {
   urls = [
-    "${local.repo_root}/modules/kms",
-    "${local.repo_root}/modules/s3",
+    "github.com/dceoy/terraform-aws-vpc-for-slc",
+    "github.com/dceoy/terraform-aws-docker-based-lambda",
     "${local.repo_root}/modules/codebuild"
   ]
 }

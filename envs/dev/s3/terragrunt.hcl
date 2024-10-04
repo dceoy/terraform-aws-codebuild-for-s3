@@ -16,5 +16,5 @@ inputs = {
 }
 
 terraform {
-  source = "${get_repo_root()}/modules/s3"
+  source = "git::https://github.com/dceoy/terraform-aws-vpc-for-slc.git//modules/s3?ref=main"
 }
