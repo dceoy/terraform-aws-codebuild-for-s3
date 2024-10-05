@@ -43,7 +43,7 @@ Usage
 ```sh
 $ aws codebuild start-build \
     --project-name slc-dev-s3-codebuild-project \
-    --buildspec-override file://envs/buildspec.yml \
+    --buildspec-override file://envs/buildspec.yml
 ```
 
 Cleanup
