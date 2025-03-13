@@ -1,7 +1,9 @@
 resource "aws_codebuild_project" "runner" {
-  name         = local.codebuild_project_name
-  description  = "CodeBuild project using buildspec on S3"
-  service_role = aws_iam_role.runner.arn
+  name           = local.codebuild_project_name
+  description    = "CodeBuild project using buildspec on S3"
+  service_role   = aws_iam_role.runner.arn
+  build_timeout  = var.codebuild_build_timeout
+  queued_timeout = var.codebuild_queued_timeout
   artifacts {
     type = "NO_ARTIFACTS"
   }
@@ -39,8 +41,14 @@ resource "aws_codebuild_project" "runner" {
       }
     }
   }
-  build_timeout  = var.codebuild_build_timeout
-  queued_timeout = var.codebuild_queued_timeout
+  dynamic "vpc_config" {
+    for_each = var.codebuild_vpc_config_vpc_id != null && length(var.codebuild_vpc_config_subnets) > 0 && length(var.codebuild_vpc_config_security_group_ids) > 0 ? [true] : []
+    content {
+      vpc_id             = var.codebuild_vpc_config_vpc_id
+      subnets            = var.codebuild_vpc_config_subnets
+      security_group_ids = var.codebuild_vpc_config_security_group_ids
+    }
+  }
   tags = {
     Name       = local.codebuild_project_name
     SystemName = var.system_name

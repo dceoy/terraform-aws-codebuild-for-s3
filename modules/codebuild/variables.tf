@@ -104,6 +104,24 @@ variable "codebuild_iam_policy_arns" {
   default     = []
 }
 
+variable "codebuild_vpc_config_vpc_id" {
+  description = "ID of the VPC within which to run CodeBuild builds"
+  type        = string
+  default     = null
+}
+
+variable "codebuild_vpc_config_subnets" {
+  description = "Subnet IDs within which to run CodeBuild builds"
+  type        = list(string)
+  default     = []
+}
+
+variable "codebuild_vpc_config_security_group_ids" {
+  description = "Security group IDs to assign to running CodeBuild builds"
+  type        = list(string)
+  default     = []
+}
+
 variable "enable_cloudwatch_logs" {
   description = "Whether to enable CloudWatch logs for CodeBuild project"
   type        = bool
