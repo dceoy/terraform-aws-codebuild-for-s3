@@ -30,6 +30,12 @@ variable "iam_role_force_detach_policies" {
   default     = true
 }
 
+variable "enable_cloudwatch_logs" {
+  description = "Whether to enable CloudWatch logs for CodeBuild project"
+  type        = bool
+  default     = true
+}
+
 variable "codebuild_environment_type" {
   description = "CodeBuild environment type"
   type        = string
@@ -120,10 +126,4 @@ variable "codebuild_vpc_config_security_group_ids" {
   description = "Security group IDs to assign to running CodeBuild builds"
   type        = list(string)
   default     = []
-}
-
-variable "enable_cloudwatch_logs" {
-  description = "Whether to enable CloudWatch logs for CodeBuild project"
-  type        = bool
-  default     = false
 }

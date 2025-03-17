@@ -62,6 +62,8 @@ inputs = {
   s3_abort_incomplete_multipart_upload_days         = 7
   s3_expired_object_delete_marker                   = true
   enable_s3_server_access_logging                   = true
+  enable_cloudwatch_logs                            = true
+  cloudwatch_logs_retention_in_days                 = 30
   iam_role_force_detach_policies                    = true
   codebuild_buildspec_yml_path                      = find_in_parent_folders("buildspec.yml")
   codebuild_environment_type                        = "ARM_CONTAINER"
@@ -75,8 +77,6 @@ inputs = {
     "AWS_ACCOUNT_ID"     = local.env_vars.locals.account_id
     "AWS_DEFAULT_REGION" = local.env_vars.locals.region
   }
-  codebuild_build_timeout           = 5
-  codebuild_queue_timeout           = 5
-  enable_cloudwatch_logs            = true
-  cloudwatch_logs_retention_in_days = 30
+  codebuild_build_timeout = 5
+  codebuild_queue_timeout = 5
 }

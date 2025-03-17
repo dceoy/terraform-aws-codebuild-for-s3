@@ -74,12 +74,17 @@ resource "aws_iam_role" "runner" {
       }
     ]
   })
-  managed_policy_arns = compact(var.codebuild_iam_policy_arns)
   tags = {
     Name       = "${var.system_name}-${var.env_type}-s3-codebuild-iam-role"
     SystemName = var.system_name
     EnvType    = var.env_type
   }
+}
+
+resource "aws_iam_role_policy_attachments_exclusive" "runner" {
+  count       = length(var.codebuild_iam_policy_arns) > 0 ? 1 : 0
+  role_name   = aws_iam_role.runner.name
+  policy_arns = var.codebuild_iam_policy_arns
 }
 
 resource "aws_cloudwatch_log_group" "runner" {
