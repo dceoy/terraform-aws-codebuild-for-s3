@@ -1,6 +1,6 @@
 resource "aws_codebuild_project" "runner" {
   name           = local.codebuild_project_name
-  description    = "CodeBuild project using buildspec on S3"
+  description    = "CodeBuild project using buildspec"
   service_role   = aws_iam_role.runner.arn
   build_timeout  = var.codebuild_build_timeout
   queued_timeout = var.codebuild_queued_timeout
@@ -42,7 +42,7 @@ resource "aws_codebuild_project" "runner" {
     }
   }
   dynamic "vpc_config" {
-    for_each = var.codebuild_vpc_config_vpc_id != null && length(var.codebuild_vpc_config_subnets) > 0 && length(var.codebuild_vpc_config_security_group_ids) > 0 ? [true] : []
+    for_each = length(aws_iam_role_policy.vpc) > 0 ? [true] : []
     content {
       vpc_id             = var.codebuild_vpc_config_vpc_id
       subnets            = var.codebuild_vpc_config_subnets
@@ -57,8 +57,8 @@ resource "aws_codebuild_project" "runner" {
 }
 
 resource "aws_iam_role" "runner" {
-  name                  = "${var.system_name}-${var.env_type}-s3-codebuild-iam-role"
-  description           = "CodeBuild service IAM role for S3 access"
+  name                  = "${var.system_name}-${var.env_type}-codebuild-iam-role"
+  description           = "CodeBuild service IAM role"
   force_detach_policies = var.iam_role_force_detach_policies
   path                  = "/"
   assume_role_policy = jsonencode({
@@ -75,7 +75,7 @@ resource "aws_iam_role" "runner" {
     ]
   })
   tags = {
-    Name       = "${var.system_name}-${var.env_type}-s3-codebuild-iam-role"
+    Name       = "${var.system_name}-${var.env_type}-codebuild-iam-role"
     SystemName = var.system_name
     EnvType    = var.env_type
   }
@@ -85,6 +85,31 @@ resource "aws_iam_role_policy_attachments_exclusive" "runner" {
   count       = length(var.codebuild_iam_policy_arns) > 0 ? 1 : 0
   role_name   = aws_iam_role.runner.name
   policy_arns = var.codebuild_iam_policy_arns
+}
+
+resource "aws_iam_role_policy" "vpc" {
+  count = var.codebuild_vpc_config_vpc_id != null && length(var.codebuild_vpc_config_subnets) > 0 && length(var.codebuild_vpc_config_security_group_ids) > 0 ? 1 : 0
+  name  = "${var.system_name}-${var.env_type}-codebuild-vpc-iam-policy"
+  role  = aws_iam_role.runner.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowVPCAccess"
+        Effect = "Allow"
+        Action = [
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeSubnets",
+          "ec2:CreateNetworkInterface",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeNetworkInterfaces",
+          "ec2:AssignPrivateIpAddresses",
+          "ec2:UnassignPrivateIpAddresses"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 resource "aws_cloudwatch_log_group" "runner" {
