@@ -98,15 +98,26 @@ resource "aws_iam_role_policy" "vpc" {
         Sid    = "AllowVPCAccess"
         Effect = "Allow"
         Action = [
-          "ec2:DescribeSecurityGroups",
-          "ec2:DescribeSubnets",
           "ec2:CreateNetworkInterface",
-          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeDhcpOptions",
           "ec2:DescribeNetworkInterfaces",
-          "ec2:AssignPrivateIpAddresses",
-          "ec2:UnassignPrivateIpAddresses"
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSubnets",
+          "ec2:DescribeSecurityGroups",
+          "ec2:DescribeVpcs"
         ]
         Resource = "*"
+      },
+      {
+        Sid      = "AllowENIPermission"
+        Effect   = "Allow"
+        Action   = ["ec2:CreateNetworkInterfacePermission"]
+        Resource = ["arn:aws:ec2:${local.region}:${local.account_id}:network-interface/*"]
+        Condition = {
+          StringEquals = {
+            "ec2:AuthorizedService" = "codebuild.amazonaws.com"
+          }
+        }
       }
     ]
   })
