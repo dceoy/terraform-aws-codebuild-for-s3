@@ -77,6 +77,6 @@ inputs = {
     "AWS_ACCOUNT_ID"     = local.env_vars.locals.account_id
     "AWS_DEFAULT_REGION" = local.env_vars.locals.region
   }
-  codebuild_build_timeout = 5
-  codebuild_queue_timeout = 5
+  codebuild_build_timeout  = 5
+  codebuild_queued_timeout = 5
 }
