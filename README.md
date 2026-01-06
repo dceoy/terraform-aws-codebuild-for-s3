@@ -1,19 +1,17 @@
-terraform-aws-codebuild-for-s3
-==============================
+# terraform-aws-codebuild-for-s3
 
 Terraform modules of a CodeBuild project for S3 buckets
 
 [![CI](https://github.com/dceoy/terraform-aws-codebuild-for-s3/actions/workflows/ci.yml/badge.svg)](https://github.com/dceoy/terraform-aws-codebuild-for-s3/actions/workflows/ci.yml)
 
-Installation
-------------
+## Installation
 
 1.  Check out the repository.
 
     ```sh
     $ git clone https://github.com/dceoy/terraform-aws-codebuild-for-s3.git
     $ cd terraform-aws-codebuild-for-s3
-    ````
+    ```
 
 2.  Install [AWS CLI](https://aws.amazon.com/cli/) and set `~/.aws/config` and `~/.aws/credentials`.
 
@@ -37,8 +35,7 @@ Installation
     $ terragrunt run-all apply --working-dir='envs/dev/' --non-interactive
     ```
 
-Usage
------
+## Usage
 
 ```sh
 $ aws codebuild start-build \
@@ -46,8 +43,7 @@ $ aws codebuild start-build \
     --buildspec-override file://envs/buildspec.yml
 ```
 
-Cleanup
--------
+## Cleanup
 
 ```sh
 $ terragrunt run-all destroy --working-dir='envs/dev/' --non-interactive
