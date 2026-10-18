@@ -89,6 +89,8 @@ resource "aws_iam_role_policy_attachments_exclusive" "runner" {
 }
 
 resource "aws_iam_role_policy" "vpc" {
+  # checkov:skip=CKV_AWS_355:VPC networking requires wildcard resource scope for EC2 discovery and ENI creation.
+  # checkov:skip=CKV_AWS_290:The wildcard actions are limited to CodeBuild VPC networking operations.
   count = var.codebuild_vpc_config_vpc_id != null && length(var.codebuild_vpc_config_subnets) > 0 && length(var.codebuild_vpc_config_security_group_ids) > 0 ? 1 : 0
   name  = "${var.system_name}-${var.env_type}-codebuild-vpc-iam-policy"
   role  = aws_iam_role.runner.id
