@@ -112,6 +112,8 @@ resource "aws_iam_role_policy" "vpc" {
       {
         Sid      = "AllowENIPermission"
         Effect   = "Allow"
+        # Restrict ENI permission to CodeBuild with the AuthorizedService condition below.
+        # nosemgrep: terraform.lang.security.iam.no-iam-resource-exposure.no-iam-resource-exposure
         Action   = ["ec2:CreateNetworkInterfacePermission"]
         Resource = ["arn:aws:ec2:${local.region}:${local.account_id}:network-interface/*"]
         Condition = {
