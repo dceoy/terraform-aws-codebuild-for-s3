@@ -2,6 +2,7 @@ resource "aws_codebuild_project" "runner" {
   name           = local.codebuild_project_name
   description    = "CodeBuild project using buildspec"
   service_role   = aws_iam_role.runner.arn
+  encryption_key = var.kms_key_arn
   build_timeout  = var.codebuild_build_timeout
   queued_timeout = var.codebuild_queued_timeout
   artifacts {
