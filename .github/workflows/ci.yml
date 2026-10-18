@@ -65,6 +65,8 @@ jobs:
       contents: write
       pull-requests: write
       actions: read
+      checks: read
+      statuses: read
     uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@main
     with:
       unconditional: true
