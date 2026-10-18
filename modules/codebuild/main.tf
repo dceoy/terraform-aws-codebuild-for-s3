@@ -127,6 +127,7 @@ resource "aws_iam_role_policy" "vpc" {
 }
 
 resource "aws_cloudwatch_log_group" "runner" {
+  # checkov:skip=CKV_AWS_338:Retention is caller-configurable and defaults to 365 days.
   count             = var.enable_cloudwatch_logs ? 1 : 0
   name              = "/${var.system_name}/${var.env_type}/codebuild/${local.codebuild_project_name}"
   retention_in_days = var.cloudwatch_logs_retention_in_days
