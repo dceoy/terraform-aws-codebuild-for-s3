@@ -42,6 +42,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      actions: read
+      security-events: write
     uses: dceoy/gha-for-devops/.github/workflows/terraform-lock-files-upgrade-and-pr-merge.yml@main
     with:
       terragrunt-working-directories: envs/dev
