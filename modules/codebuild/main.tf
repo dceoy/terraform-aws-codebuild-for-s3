@@ -2,6 +2,7 @@ resource "aws_codebuild_project" "runner" {
   name           = local.codebuild_project_name
   description    = "CodeBuild project using buildspec"
   service_role   = aws_iam_role.runner.arn
+  encryption_key = var.kms_key_arn
   build_timeout  = var.codebuild_build_timeout
   queued_timeout = var.codebuild_queued_timeout
   artifacts {
@@ -88,6 +89,8 @@ resource "aws_iam_role_policy_attachments_exclusive" "runner" {
 }
 
 resource "aws_iam_role_policy" "vpc" {
+  # checkov:skip=CKV_AWS_355:VPC networking requires wildcard resource scope for EC2 discovery and ENI creation.
+  # checkov:skip=CKV_AWS_290:The wildcard actions are limited to CodeBuild VPC networking operations.
   count = var.codebuild_vpc_config_vpc_id != null && length(var.codebuild_vpc_config_subnets) > 0 && length(var.codebuild_vpc_config_security_group_ids) > 0 ? 1 : 0
   name  = "${var.system_name}-${var.env_type}-codebuild-vpc-iam-policy"
   role  = aws_iam_role.runner.id
@@ -111,7 +114,7 @@ resource "aws_iam_role_policy" "vpc" {
       {
         Sid      = "AllowENIPermission"
         Effect   = "Allow"
-        Action   = ["ec2:CreateNetworkInterfacePermission"]
+        Action   = ["ec2:CreateNetworkInterfacePermission"] # nosemgrep: terraform.lang.security.iam.no-iam-resource-exposure.no-iam-resource-exposure
         Resource = ["arn:aws:ec2:${local.region}:${local.account_id}:network-interface/*"]
         Condition = {
           StringEquals = {
@@ -124,6 +127,7 @@ resource "aws_iam_role_policy" "vpc" {
 }
 
 resource "aws_cloudwatch_log_group" "runner" {
+  # checkov:skip=CKV_AWS_338:Retention is caller-configurable and defaults to 365 days.
   count             = var.enable_cloudwatch_logs ? 1 : 0
   name              = "/${var.system_name}/${var.env_type}/codebuild/${local.codebuild_project_name}"
   retention_in_days = var.cloudwatch_logs_retention_in_days
