@@ -12,7 +12,7 @@ phases:
     commands:
       - set -euo pipefail
       - date
-      - dnf -y upgrade
+      - dnf -yq --refresh upgrade
     finally:
       - echo 'Install phase is completed.'
   pre_build:
