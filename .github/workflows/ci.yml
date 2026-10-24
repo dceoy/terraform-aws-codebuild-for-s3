@@ -27,11 +27,11 @@ jobs:
         && (! startswith(github.head_ref, 'renovate/'))
       ) || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'lint-and-scan')
     permissions:
+      actions: read
+      security-events: write
       contents: write
     uses: dceoy/gha-for-devops/.github/workflows/terraform-lint-and-scan.yml@main
     with:
-      submit-dependencies: true
-      snapshot-correlator: terraform-source
       search-path: .
       terraform-version: latest
       terragrunt-version: latest
@@ -42,10 +42,10 @@ jobs:
         && (startswith(github.head_ref, 'dependabot/terraform/') || startswith(github.head_ref, 'renovate/'))
       ) || (github.event_name == 'workflow_dispatch' && inputs.workflow == 'upgrade')
     permissions:
-      contents: write
-      pull-requests: write
       actions: read
       security-events: write
+      contents: write
+      pull-requests: write
     uses: dceoy/gha-for-devops/.github/workflows/terraform-lock-files-upgrade-and-pr-merge.yml@main
     with:
       terragrunt-working-directories: envs/dev
@@ -53,7 +53,7 @@ jobs:
       terragrunt-version: latest
       merged-pr-branch-prefix: ${{ startswith(github.head_ref, 'dependabot/terraform/') && 'dependabot/terraform/' || null }}
       search-path-for-lint-and-scan: .
-      merge-pr: ${{ github.event_name == 'pull_request' }}
+      merge-pr: false
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   dependabot-auto-merge:
@@ -64,11 +64,11 @@ jobs:
     needs:
       - terraform-lint-and-scan
     permissions:
+      checks: read
+      statuses: read
       contents: write
       pull-requests: write
       actions: read
-      checks: read
-      statuses: read
     uses: dceoy/gha-for-devops/.github/workflows/dependabot-auto-merge.yml@main
     with:
       unconditional: true
