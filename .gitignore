@@ -38,3 +38,6 @@ terraform.rc
 
 # .terragrunt-cache directory
 .terragrunt-cache
+
+# Provider locks are maintained under modules/ instead of envs/
+envs/**/.terraform.lock.hcl
