@@ -30,5 +30,6 @@ inputs = {
 }
 
 terraform {
-  source = "${get_repo_root()}/modules/codebuild"
+  source                   = "${get_repo_root()}/modules/codebuild"
+  copy_terraform_lock_file = false
 }
